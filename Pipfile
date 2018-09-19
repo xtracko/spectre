@@ -4,9 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+numba = "*"
 numpy = "*"
 pandas = "*"
+pyopenms = "*"
 scipy = "*"
+seaborn = "*"
+sphinx = "*"
+sphinx_bootstrap_theme = "*"
 
 [dev-packages]
 
