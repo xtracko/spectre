@@ -1,4 +1,5 @@
 .idea
 data
+docs/_build
 
 Pipfile.lock

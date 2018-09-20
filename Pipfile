@@ -11,7 +11,7 @@ pyopenms = "*"
 scipy = "*"
 seaborn = "*"
 sphinx = "*"
-sphinx_bootstrap_theme = "*"
+"sphinxjp.themes.basicstrap" = "*"
 
 [dev-packages]
 
