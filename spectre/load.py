@@ -1,89 +1,116 @@
+from os import PathLike, fsencode
+from typing import Union, Text
+
 import numpy as np
 
-from numba import njit
+from spectre.spectra import sample_spectra
 from spectre.xic import Xic
 
 
-__all__ = ['from_peaks', 'from_pickle', 'from_mzxml', 'to_pickle']
+def from_spectra(scans: np.ndarray, peaks: np.ndarray, values: np.ndarray,
+                 retention_times: np.ndarray, sampling: float) -> Xic:
+    """Create a spectre project from sparse spectral data.
+
+    Args:
+        scans:
+        peaks:
+        values:
+        retention_times:
+        sampling:
+
+    Returns:
+        Xic: A Spectre project.
+
+    Raises:
+        ValueError:
+    """
+    if scans[0] != 0 or np.any(scans[:-1] > scans[1:]) \
+            or scans[-1] != len(peaks):
+        raise ValueError('Scans is not a valid pointer array to the peaks '
+                         'array!')
+
+    if not np.all(retention_times[:-1] < retention_times[1:]):
+        raise ValueError('Scans are not sorted by retention times!')
+
+    sampled = sample_spectra(scans, peaks, values, sampling)
+
+    min_mz = np.round(peaks.min() * (1/sampling)) * sampling
+    max_mz = np.round(peaks.max() * (1/sampling)) * sampling
+
+    return Xic(data=sampled,
+               mz_scales=np.linspace(min_mz, max_mz, sampled.shape[1], True),
+               rt_scales=retention_times)
 
 
-@njit
-def _minmax(values):
-    minimum = np.PINF
-    maximum = np.NINF
+def from_mzxml(file: Union[Text, PathLike], sampling: float) -> Xic:
+    """Create a Spectre project from a mzXML file.
 
-    for value in values:
-        minimum = min(minimum, value)
-        maximum = max(maximum, value)
-    return minimum, maximum
+    Args:
+        file (Union[Text, PathLike]): A valid path to the mzXML file.
+        sampling (float): A sampling resolution (see :func:`from_spectra`).
 
-
-def _mzrange_peaks(spectra):
-    minimum = np.PINF
-    maximum = np.NINF
-
-    for a, b in (_minmax(mz) for _, mz, _ in spectra):
-        minimum = min(minimum, a)
-        maximum = max(maximum, b)
-    return minimum, maximum
-
-
-@njit
-def _sampling_kernel(transformed_mz, values, nbins: int):
-    data = np.zeros(nbins)
-    clip = (0 < transformed_mz) & (transformed_mz < nbins)
-
-    for i, value in zip(transformed_mz[clip], values[clip]):
-        data[i] = max(value, data[i])
-    return data
-
-
-def _sample_peaks(spectra, nspectra: int, minimum: float, maximum: float, resolution: float):
-    beg = int(round(minimum / resolution))
-    end = int(round(maximum / resolution))
-    nbins = end - beg + 1
-
-    rts = np.zeros(nspectra)
-    data = np.zeros((nspectra, nbins))
-    mz_scales = np.linspace(minimum, maximum, nbins)
-
-    for i, (rt, mz, values) in enumerate(spectra):
-        rts[i] = rt
-        data[i] = _sampling_kernel(np.round(mz / resolution).astype(int) - beg, values, nbins)
-    return data, rts, mz_scales
-
-
-def from_peaks(spectra, resolution: float):
-    minimum, maximum = _mzrange_peaks(spectra)
-    data, rts, mz_scales = _sample_peaks(spectra, len(spectra), minimum, maximum, resolution)
-    return Xic(data, rts, mz_scales)
-
-
-def from_mzxml(file: str, resolution: float):
+    Returns:
+        Xic: A Spectre project.
+    """
     from pyopenms import MSExperiment, MzXMLFile
 
-    class Wrapper:
-        def __init__(self, exp):
-            self.exp = MSExperiment()
-            MzXMLFile().load(file.encode(), self.exp)
+    exp = MSExperiment()
+    MzXMLFile().load(fsencode(file), exp)
 
-        def __len__(self):
-            return self.exp.getNrSpectra()
+    if not exp.isSorted():
+        exp.sortSpectra()
 
-        def __iter__(self):
-            return ((s.getRT(), *s.get_peaks()) for s in self.exp)
+    scans = np.r_[0, np.cumsum([scan.size() for scan in exp])]
+    peaks = np.empty(scans[-1], np.float64)
+    values = np.empty(scans[-1], np.float64)
+    retention_times = np.asarray([scan.getRT() for scan in exp])
 
-    return from_peaks(Wrapper(file), resolution)
-
-
-def to_pickle(eic: Xic, file: str):
-    from pickle import dump
-    dump(eic, open(file, 'wb'))
+    for a, b, spectrum in zip(scans[:-1], scans[1:], exp):
+        peaks[a:b], values[a:b] = spectrum.get_peaks()
+    return from_spectra(scans, peaks, values, retention_times, sampling)
 
 
-def from_pickle(file: str):
-    from pickle import load
-    obj = load(open(file, 'rb'))
+def from_pickle(file: Union[Text, PathLike]) -> Xic:
+    """Open a Spectre project from a pickle file.
+
+    Args:
+        file (Union[Text, PathLike]): A valid path to the pickle file.
+
+    Returns:
+        Xic: A Spectre project.
+
+    Raises:
+        TypeError: The file does not contain a valid Spectre project.
+        OSError: An error occurred during reading the file.
+    """
+    import pickle
+
+    with open(file, 'rb') as f:
+        obj = pickle.load(f)
+
     if not isinstance(obj, Xic):
-        raise TypeError('The pickle file does not contain a valid Xic class!')
+        raise TypeError('The file is not a valid Spectre project!')
     return obj
+
+
+def to_pickle(obj: Xic, file: Union[Text, PathLike]) -> None:
+    """Save a Spectre project as a pickle file.
+
+    The saving/loading of a pickle file is much more faster then parsing
+    mzXML format or other traditional formats.
+
+    Args:
+        obj (Xic): A Spectre project.
+        file (Union[Text, PathLike]): Path to the file.
+
+    Raises:
+        TypeError: The object to pickle is not a valid Spectre project.
+        OSError: An error occurred during writing to the file.
+    """
+    import pickle
+
+    if not isinstance(obj, Xic):
+        raise TypeError('The supplied object is not a valid Spectre project!')
+
+    with open(file, 'wb') as f:
+        pickle.dump(obj, f)
