@@ -16,7 +16,7 @@ def from_spectra(scans: np.ndarray, peaks: np.ndarray, values: np.ndarray,
         peaks:
         values:
         retention_times:
-        sampling:
+        sampling: A sampling resolution
 
     Returns:
         Xic: A Spectre project.
@@ -71,7 +71,10 @@ def from_mzxml(file: Union[Text, PathLike], sampling: float) -> Xic:
 
 
 def from_pickle(file: Union[Text, PathLike]) -> Xic:
-    """Open a Spectre project from a pickle file.
+    """Load a Spectre project from a pickle file.
+
+    The saving/loading of a pickle file is much more faster then parsing
+    mzXML format or other traditional formats.
 
     Args:
         file (Union[Text, PathLike]): A valid path to the pickle file.
