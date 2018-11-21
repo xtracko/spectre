@@ -10,6 +10,7 @@ numba = "*"
 pyopenms = "*"
 sphinx = "*"
 "sphinxjp.themes.basicstrap" = "*"
+"pybind11" = "*"
 
 [dev-packages]
 
