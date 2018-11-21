@@ -1,7 +1,9 @@
 .idea
 .vscode
+*.user
 
-data
+build
 docs/_build
 
 Pipfile.lock
+__pycache__
