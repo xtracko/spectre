@@ -2,7 +2,7 @@
 .vscode
 *.user
 
-build
+*build*
 docs/_build
 
 Pipfile.lock
