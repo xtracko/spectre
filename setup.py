@@ -75,5 +75,5 @@ setup(
     ext_modules=[CMakeExtension('spectre.sparse2')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    install_requires=['numba', 'numpy', 'pybind11']
+    install_requires=['numba', 'numpy']
 )
