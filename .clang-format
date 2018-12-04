@@ -1,0 +1,7 @@
+---
+BasedOnStyle: LLVM
+AllowShortFunctionsOnASingleLine: Empty
+BreakConstructorInitializers: BeforeComma
+NamespaceIndentation: All
+PenaltyBreakAssignment: 1000
+...
