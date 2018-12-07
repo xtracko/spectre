@@ -1,6 +1,6 @@
 #pragma once
 
-#include "array_coo.h"
+#include "array_view.h"
 #include <algorithm>
 #include <iterator>
 
@@ -15,24 +15,27 @@ template <unsigned... Order> struct coordinate_comparator {
 };
 
 template <typename Array, typename Comparator>
-auto is_canonical(Array&& array, Comparator&& comparator)
+auto is_canonical(Array const& array, Comparator&& comparator)
     -> std::enable_if_t<is_coo_array_v<Array>, bool> {
   if (array.empty())
     return true;
 
   bool result = true;
-  const auto coords = array.coords().first(array.size() - 1);
+  auto axis1 = coords<1>(array).cbegin();
+  const auto sentinel = coords<0>(array).cend() - 1;
 
-#pragma omp parallel for simd reduction(&& : result) schedule(static, 512)
-  for (auto iter = std::cbegin(coords); iter < std::cend(coords); ++iter) {
-    result = result && comparator(iter[0], iter[1]);
+#pragma omp parallel for simd reduction(&& : result) linear(axis1 : 1) schedule(static, 512)
+  for (auto axis0 = coords<0>(array).cbegin(); axis0 < sentinel; ++axis0) {
+    result &= comparator(std::tuple{axis0[0], axis1[0]},
+                         std::tuple{axis0[1], axis1[1]});
   }
   return result;
 }
 
 template <typename Array, typename Comparator>
 auto to_canonical(Array&& array, Comparator&& comparator)
-    -> std::enable_if_t<is_coo_array_v<Array>, Array> {
+    -> std::enable_if_t<!std::is_const_v<Array> && is_coo_array_v<Array>,
+                        Array> {
   if (is_canonical(array, comparator))
     return std::forward<Array>(array);
 
