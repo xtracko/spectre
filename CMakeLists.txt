@@ -5,9 +5,9 @@ project(xsparse)
 set(PYBIND11_CPP_STANDARD -std=c++17)
 
 
-find_package(pybind11 REQUIRED)
-find_package(GTest)
-find_package(benchmark)
+find_package(pybind11 2.2.4 REQUIRED)
+find_package(GTest 1.8)
+find_package(benchmark 1.4)
 
 
 add_library(xsparse INTERFACE)
@@ -29,7 +29,7 @@ endif (GTest_FOUND)
 
 if (benchmark_FOUND)
     add_executable(xsparse-bench xsparse-bench/main.cpp)
-    target_link_libraries(xsparse-bench PRIVATE benchmark)
+    target_link_libraries(xsparse-bench PRIVATE benchmark::benchmark benchmark::main)
 endif (benchmark_FOUND)
 
 

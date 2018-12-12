@@ -84,11 +84,4 @@ namespace xsparse {
   template <typename U, typename... Us>
   coo_view(std::tuple<typename Us::value_type...>, U &values, Us &... coords)
       ->coo_view<typename U::value_type, typename Us::value_type...>;
-  /*
-    template <typename U, typename... Us>
-    coo_view(std::tuple<typename Us::value_type...>, const U &values,
-             const Us &... coords)
-        ->coo_view<std::add_const_t<typename U::value_type>,
-                   std::add_const_t<typename Us::value_type>...>;
-  */
 } // namespace xsparse
