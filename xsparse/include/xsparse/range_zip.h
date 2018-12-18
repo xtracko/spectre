@@ -1,5 +1,5 @@
-#include <range_traits.h>
 #include <tuple>
+#include <xsparse/range_traits.h>
 
 namespace xsparse::range {
   template <typename... Ts> struct zip_proxy : std::tuple<Ts...> {
@@ -160,36 +160,34 @@ namespace xsparse::range {
   };
 
   template <typename... Ts> zip(Ts &&...)->zip<Ts...>;
-} // namespace xsparse::range
 
-namespace std {
   template <typename... Ts>
-  void swap(xsparse::range::zip_proxy<Ts...> &&a,
-            xsparse::range::zip_proxy<Ts...> &&b) {
+  void swap(::xsparse::range::zip_proxy<Ts...> &&a,
+            ::xsparse::range::zip_proxy<Ts...> &&b) {
     a.swap(b);
   }
 
   template <std::size_t Index, typename... Ts>
   constexpr decltype(auto)
-  get(xsparse::range::zip_proxy<Ts...> &proxy) noexcept {
-    return std::get<Index>(static_cast<std::tuple<Ts...> &>(proxy));
+  get(::xsparse::range::zip_proxy<Ts...> &proxy) noexcept {
+    return ::std::get<Index>(static_cast<std::tuple<Ts...> &>(proxy));
   }
 
   template <std::size_t Index, typename... Ts>
   constexpr decltype(auto)
-  get(xsparse::range::zip_proxy<Ts...> &&proxy) noexcept {
-    return std::get<Index>(static_cast<std::tuple<Ts...> &&>(proxy));
+  get(::xsparse::range::zip_proxy<Ts...> &&proxy) noexcept {
+    return ::std::get<Index>(static_cast<std::tuple<Ts...> &&>(proxy));
   }
 
   template <std::size_t Index, typename... Ts>
   constexpr decltype(auto)
-  get(const xsparse::range::zip_proxy<Ts...> &proxy) noexcept {
-    return std::get<Index>(static_cast<const std::tuple<Ts...> &>(proxy));
+  get(const ::xsparse::range::zip_proxy<Ts...> &proxy) noexcept {
+    return ::std::get<Index>(static_cast<const std::tuple<Ts...> &>(proxy));
   }
 
   template <std::size_t Index, typename... Ts>
   constexpr decltype(auto)
-  get(const xsparse::range::zip_proxy<Ts...> &&proxy) noexcept {
-    return std::get<Index>(static_cast<const std::tuple<Ts...> &&>(proxy));
+  get(const ::xsparse::range::zip_proxy<Ts...> &&proxy) noexcept {
+    return ::std::get<Index>(static_cast<const std::tuple<Ts...> &&>(proxy));
   }
-} // namespace std
+} // namespace xsparse::range

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <range_span.h>
+#include <xsparse/range_span.h>
 
 using xsparse::range::span;
 
@@ -41,10 +41,9 @@ TEST(span_test, nonempty) {
   EXPECT_EQ(view.last(0).end(), data.data() + 4);
   EXPECT_EQ(view.last(1).end(), data.data() + 4);
 
-  EXPECT_EQ(view.subspan(1,1).begin(), data.data() + 1);
-  EXPECT_EQ(view.subspan(1,1).end(), data.data() + 2);
+  EXPECT_EQ(view.subspan(1, 1).begin(), data.data() + 1);
+  EXPECT_EQ(view.subspan(1, 1).end(), data.data() + 2);
 }
-
 
 TEST(span_test, deductible) {
   auto a = std::array{0, 1};
@@ -53,4 +52,3 @@ TEST(span_test, deductible) {
   ::testing::StaticAssertTypeEq<decltype(span(a)), span<int>>();
   ::testing::StaticAssertTypeEq<decltype(span(b)), span<const char>>();
 }
-

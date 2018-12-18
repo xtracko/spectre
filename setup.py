@@ -49,7 +49,7 @@ class CMakeBuild(build_ext):
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
         else:
-            cmake_args += [f'-DCMAKE_BUILD_TYPE={cfg}']
+            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
             build_args += ['--', '-j2']
 
         env = os.environ.copy()

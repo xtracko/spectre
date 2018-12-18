@@ -6,8 +6,8 @@
 #include <pybind11/numpy.h>
 
 template <typename U>
-using pyarray =
-    pybind11::array_t<U, pybind11::array::c_style | pybind11::array::forcecast>;
+using pyarray = pybind11::array_t<U, pybind11::array::c_style |
+                                         pybind11::array::forcecast>;
 
 template <typename Ty, typename... Cxs> struct pycoo : coo_array_tag {
   using coord_type = std::tuple<Cxs...>;
@@ -22,20 +22,17 @@ template <typename Ty, typename... Cxs> struct pycoo : coo_array_tag {
   constexpr pycoo(shape_type shape)
       : _shape{std::move(shape)}
       , _values{}
-      , _coords{} {
-  }
+      , _coords{} {}
 
   constexpr pycoo(shape_type shape, std::size_t size)
       : _shape{std::move(shape)}
       , _values{size}
-      , _coords{pyarray<Cxs>{size}...} {
-  }
+      , _coords{pyarray<Cxs>{size}...} {}
 
   constexpr pycoo(shape_type shape, pyarray<Ty> values, pyarray<Cxs>... coords)
       : _shape{std::move(shape)}
       , _values{std::move(values)}
-      , _coords{std::move(coords)...} {
-  }
+      , _coords{std::move(coords)...} {}
 
   constexpr bool empty() const {
     return size() == 0;
@@ -63,7 +60,7 @@ template <typename Ty, typename... Cxs> struct pycoo : coo_array_tag {
 
   constexpr auto coords() {
     return std::apply(
-        [](auto&&... coords) {
+        [](auto &&... coords) {
           return range::zip{
               range::span<Cxs>{coords.mutable_data(0), coords.size()}...};
         },
@@ -72,7 +69,7 @@ template <typename Ty, typename... Cxs> struct pycoo : coo_array_tag {
 
   constexpr auto coords() const {
     return std::apply(
-        [](auto&&... coords) {
+        [](auto &&... coords) {
           return range::zip{
               range::span<const Cxs>{coords.data(0), coords.size()}...};
         },
@@ -108,11 +105,10 @@ namespace pybind11::detail {
   struct type_caster<pycoo<Ty, Ix, Jx>> {
     using type = pycoo<Ty, Ix, Jx>;
 
-    PYBIND11_TYPE_CASTER(type,
-                         _("scipy.sparse.coo_matrix[") +
-                             npy_format_descriptor<Ix>::name() + _(", ") +
-                             npy_format_descriptor<Jx>::name() + _(", ") +
-                             npy_format_descriptor<Ty>::name() + _("]"));
+    PYBIND11_TYPE_CASTER(type, _("scipy.sparse.coo_matrix[") +
+                                   npy_format_descriptor<Ix>::name() + _(", ") +
+                                   npy_format_descriptor<Jx>::name() + _(", ") +
+                                   npy_format_descriptor<Ty>::name() + _("]"));
 
     bool load(handle source, bool) {
       auto scipy_type = module::import("scipy.sparse").attr("coo_matrix");
@@ -142,7 +138,7 @@ namespace pybind11::detail {
       return true;
     }
 
-    static handle cast(const type& source, return_value_policy, handle) {
+    static handle cast(const type &source, return_value_policy, handle) {
       auto scipy_type = module::import("scipy.sparse").attr("coo_matrix");
 
       return scipy_type(std::tuple{source._values, source._coords},

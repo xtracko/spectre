@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array_traits.h>
 #include <type_traits>
 
 namespace xsparse {

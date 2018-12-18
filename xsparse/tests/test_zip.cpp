@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <range_span.h>
-#include <range_zip.h>
+#include <xsparse/range_span.h>
+#include <xsparse/range_zip.h>
 
 using xsparse::range::span;
 using xsparse::range::zip;
@@ -25,8 +25,8 @@ TEST(zip_test, random_access_iterator) {
   ASSERT_FALSE(c.empty());
   ASSERT_EQ(c.size(), 4);
 
-  auto i = std::begin(c);
-  auto j = std::end(c);
+  auto i = c.begin();
+  auto j = c.end();
 
   using iterator = std::decay_t<decltype(i)>;
   using category = typename std::iterator_traits<iterator>::iterator_category;
@@ -58,8 +58,8 @@ TEST(zip_test, random_access_iterator) {
   EXPECT_EQ(j - i, 4);
   EXPECT_EQ(i - j, -4);
 
-  EXPECT_EQ(i + 4, std::end(c));
-  EXPECT_EQ(j - 4, std::begin(c));
+  EXPECT_EQ(i + 4, c.end());
+  EXPECT_EQ(j - 4, c.begin());
 }
 
 TEST(zip_test, forward_iteration) {
@@ -109,15 +109,16 @@ TEST(zip_test, class_template_deduction) {
   const auto carray = std::vector<int>{};
 
   using zip_by_reference = decltype(zip{array});
-  using zip_by_creference = decltype(zip{carray});
+  using zip_by_const_reference = decltype(zip{carray});
 
   ::testing::StaticAssertTypeEq<zip_by_reference, zip<std::vector<int> &>>();
-  ::testing::StaticAssertTypeEq<zip_by_creference,
+  ::testing::StaticAssertTypeEq<zip_by_const_reference,
                                 zip<const std::vector<int> &>>();
 
   using zip_by_rvalue = decltype(zip{std::move(array)});
-  using zip_by_crvalue = decltype(zip{std::move(carray)});
+  using zip_by_const_rvalue = decltype(zip{std::move(carray)});
 
   ::testing::StaticAssertTypeEq<zip_by_rvalue, zip<std::vector<int>>>();
-  ::testing::StaticAssertTypeEq<zip_by_crvalue, zip<const std::vector<int>>>();
+  ::testing::StaticAssertTypeEq<zip_by_const_rvalue,
+                                zip<const std::vector<int>>>();
 }

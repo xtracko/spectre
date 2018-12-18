@@ -1,7 +1,7 @@
-#include <array_view.h>
 #include <gtest/gtest.h>
 #include <type_traits>
 #include <vector>
+#include <xsparse/array_view.h>
 
 using xsparse::coo_view;
 
