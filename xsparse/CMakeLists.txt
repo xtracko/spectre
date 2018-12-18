@@ -1,4 +1,4 @@
-find_package(TBB)
+find_package(TBB 2019.0 REQUIRED)
 
 add_library(xsparse INTERFACE)
 target_compile_features(xsparse INTERFACE cxx_std_17)
