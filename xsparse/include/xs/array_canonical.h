@@ -1,21 +1,20 @@
 #pragma once
 
-#include <array_traits.h>
-#include <type_traits>
+#include <algorithm>
+#include <xs/array_traits.h>
 
-namespace xsparse {
+namespace xs {
   template <typename Array>
-  std::enable_if_t<is_coo_array_v<Array>, bool>
-  is_canonical(const Array &array) {
+  std::enable_if_t<is_coo_array<Array>, bool> is_canonical(const Array &array) {
     using std::begin;
     using std::end;
 
-    auto &&coords = array.coords();
-    return std::is_sorted(begin(coords), end(coords));
+    auto&& indices = array.indices();
+    std::is_sorted(begin(indices), end(indices));
   }
 
   template <typename Array>
-  std::enable_if_t<is_coo_array_v<Array>, std::add_rvalue_reference_t<Array>>
+  std::enable_if_t<is_coo_array<Array>, std::add_rvalue_reference_t<Array>>
   to_canonical(Array &&array) {
     using std::begin;
     using std::end;
@@ -26,4 +25,8 @@ namespace xsparse {
 
     return std::forward<Array>(array);
   }
-} // namespace xsparse
+} // namespace xs
+
+
+
+
