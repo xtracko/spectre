@@ -10,8 +10,6 @@ if(BUILD_Tests)
     find_package(GTest 1.8 REQUIRED)
 
     add_executable(xsparse-test
-            tests/test_coo.cpp
-            tests/test_span.cpp
             tests/test_zip.cpp)
     target_link_libraries(xsparse-test
             xsparse
@@ -28,8 +26,9 @@ if(BUILD_Benchmarks)
     find_package(benchmark REQUIRED)
 
     add_executable(xsparse-benchmark
-            benchmarks/dummy.cpp)
+            benchmarks/bench_radix_sort.cpp)
     target_link_libraries(xsparse-benchmark PRIVATE
+            xsparse
             benchmark::benchmark
             benchmark::benchmark_main)
 endif(BUILD_Benchmarks)
