@@ -71,8 +71,8 @@ setup(
     author='xtracko',
     author_email='novotng@gmail.com',
     url='https://github.com/xtracko/spectre',
-    packages=['spectre', 'spectre.sparse', 'spectre.sparse2'],
-    ext_modules=[CMakeExtension('spectre.sparse2')],
+    packages=['spectre', 'spectre.sparse'],
+    ext_modules=[],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     install_requires=['numba', 'numpy']
