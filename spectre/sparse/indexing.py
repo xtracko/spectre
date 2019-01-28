@@ -1,7 +1,7 @@
 from typing import Tuple
 
 import numpy as np
-from numba import njit, prange
+from numba import jit, njit, prange
 
 
 @njit
@@ -95,7 +95,7 @@ def sort_cols(rows: np.ndarray, cols: np.ndarray, data: np.ndarray):
             data[a:b] = data[a:b][indices]
 
 
-@njit(parallel=True, nogil=True)
+@njit
 def unique_cols(rows: np.ndarray, cols: np.ndarray) -> np.ndarray:
     """Find unique columns in each row.
 
@@ -117,7 +117,7 @@ def unique_cols(rows: np.ndarray, cols: np.ndarray) -> np.ndarray:
 
     mask = np.ones_like(cols, np.bool_)
 
-    for i in prange(rows.size - 1):
+    for i in range(rows.size - 1):
         a, b = rows[i], rows[i + 1]
         mask[a + 1:b] = cols[a:b - 1] != cols[a + 1:b]
     return mask
