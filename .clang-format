@@ -1,6 +1,23 @@
 ---
 BasedOnStyle: LLVM
-AllowShortFunctionsOnASingleLine: Empty
-BreakConstructorInitializers: BeforeComma
+AllowShortFunctionsOnASingleLine: None
+#BinPackParameters: false
+BraceWrapping:
+  AfterClass:      true
+  AfterControlStatement: false
+  AfterEnum:       false
+  AfterFunction:   true
+  AfterNamespace:  false
+  AfterObjCDeclaration: false
+  AfterStruct:     false
+  AfterUnion:      false
+  AfterExternBlock: false
+  BeforeCatch:     false
+  BeforeElse:      false
+  IndentBraces:    false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBraces: Custom
 NamespaceIndentation: All
 ...
