@@ -1,5 +1,5 @@
-from os import PathLike, fsencode
-from typing import Union, Text
+from os import fsencode
+from typing import Union, Text, Any
 
 import numpy as np
 
@@ -42,7 +42,7 @@ def from_spectra(scans: np.ndarray, peaks: np.ndarray, values: np.ndarray,
                rt_scales=retention_times)
 
 
-def from_mzxml(file: Union[Text, PathLike], sampling: float) -> Xic:
+def from_mzxml(file: Union[Text, Any], sampling: float) -> Xic:
     """Create a Spectre project from a mzXML file.
 
     Args:
@@ -70,7 +70,7 @@ def from_mzxml(file: Union[Text, PathLike], sampling: float) -> Xic:
     return from_spectra(scans, peaks, values, retention_times, sampling)
 
 
-def from_pickle(file: Union[Text, PathLike]) -> Xic:
+def from_pickle(file: Union[Text, Any]) -> Xic:
     """Load a Spectre project from a pickle file.
 
     The saving/loading of a pickle file is much more faster then parsing
@@ -96,7 +96,7 @@ def from_pickle(file: Union[Text, PathLike]) -> Xic:
     return obj
 
 
-def to_pickle(obj: Xic, file: Union[Text, PathLike]) -> None:
+def to_pickle(obj: Xic, file: Union[Text, Any]) -> None:
     """Save a Spectre project as a pickle file.
 
     The saving/loading of a pickle file is much more faster then parsing

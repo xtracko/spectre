@@ -14,13 +14,13 @@ def is_canonical(x: Union[coo_matrix, csr_matrix, csc_matrix]):
     elif isspmatrix_csr(x) or isspmatrix_csc(x):
         return _sparse.is_canonical_csr(x.indptr, x.indices)
     else:
-        raise TypeError(f"unsupported type given '{type(x)}'")
+        raise TypeError("unsupported type given '{}'".format(type(x)))
 
 
 def std(x: Union[csr_matrix, csc_matrix], axis: int):
     if axis not in (0, 1):
         raise ValueError(
-            f"Unsupported axis value {axis} for 2 dimensional matrix")
+            "Unsupported axis value {} for 2 dimensional matrix".format(axis))
 
     x = x.tocsc() if axis == 0 else x.tocsr()
     y = np.zeros(shape=x.shape[1 - axis], dtype=x.dtype)

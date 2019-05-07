@@ -14,7 +14,7 @@ class Xic:
         return False
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self.data)})"
+        return str(self.__class__.__name__) + repr(self.data)
 
     def copy(self):
         return Xic(self.data.copy(), self.mz_scales.copy(), self.rt_scales.copy())

@@ -42,7 +42,7 @@ def pad(a: coo_matrix, width: Union[int, Tuple, List], mode: str) -> coo_matrix:
         raise NotImplementedError('symmetric mode is incomplete')
 
     else:
-        raise ValueError(f'Unsupported mode "{mode}"')
+        raise ValueError('Unsupported mode "{}"'.format(mode))
 
 
 def rolling_min(a: coo_matrix, k: Tuple[int, ...],
@@ -80,7 +80,7 @@ def rolling_min(a: coo_matrix, k: Tuple[int, ...],
         return coo_matrix((cx[mask], (ci[mask], cj[mask])), shape)
 
     else:
-        raise ValueError(f'Unsupported mode "{mode}"')
+        raise ValueError('Unsupported mode "{}"'.format(mode))
 
 
 def rolling_mean(a: coo_matrix, k: Tuple[int, ...],
@@ -118,7 +118,7 @@ def rolling_mean(a: coo_matrix, k: Tuple[int, ...],
         return coo_matrix((cx[mask], (ci[mask], cj[mask])), shape)
 
     else:
-        raise ValueError(f'Unsupported mode "{mode}"')
+        raise ValueError('Unsupported mode "{}"'.format(mode))
 
 
 def rolling_median(a: coo_matrix, k: Tuple[int, ...],
@@ -166,7 +166,7 @@ def rolling_median(a: coo_matrix, k: Tuple[int, ...],
         return coo_matrix((cx[mask], (ci[mask], cj[mask])), shape)
 
     else:
-        raise ValueError(f'Unsupported mode "{mode}"')
+        raise ValueError('Unsupported mode "{}"'.format(mode))
 
 
 def std(a: coo_matrix, axis: int) -> coo_matrix:
@@ -174,7 +174,7 @@ def std(a: coo_matrix, axis: int) -> coo_matrix:
         raise TypeError("Matrix is not in COO format")
     if axis not in (0, 1):
         raise ValueError(
-            f"Unsupported axis value {axis} for 2 dimensional matrix")
+            "Unsupported axis value {} for 2 dimensional matrix".format(axis))
 
     if not a.has_canonical_format:
         a.sum_duplicates()

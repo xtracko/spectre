@@ -11,7 +11,7 @@ SparseMatrix = Union[csr_matrix, csc_matrix]
 def std(x: SparseMatrix, axis: int) -> np.ndarray:
     if axis not in (0, 1):
         raise ValueError(
-            f"Unsupported axis value {axis} for 2 dimensional matrix")
+            "Unsupported axis value {} for 2 dimensional matrix".format(axis))
 
     x = x.tocsc() if axis == 0 else x.tocsr()
     y = np.zeros(shape=x.shape[1 - axis], dtype=x.dtype)
@@ -25,7 +25,7 @@ def std(x: SparseMatrix, axis: int) -> np.ndarray:
 def _apply(x: SparseMatrix, axis: int, func: Callable) -> SparseMatrix:
     if axis not in (0, 1):
         raise ValueError(
-            f"Unsupported axis value {axis} for 2 dimensional matrix")
+            "Unsupported axis value {} for 2 dimensional matrix".format(axis))
 
     xn = 0
     m, n = x.shape
