@@ -1,46 +1,5 @@
-import os
-import platform
-import subprocess
-import sys
-
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
-
-
-class CMakeExtension(Extension):
-    def __init__(self, name, sources=None):
-        super().__init__(self, name, sources)
-
-
-class CMakeBuild(build_ext):
-    def run(self):
-        for ext in self.extensions:
-            self.build_extension(ext)
-
-    def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-        cmake_args = [f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}', f'-DPYTHON_EXECUTABLE={sys.executable}']
-
-        cfg = 'Debug' if self.debug else 'Release'
-        build_args = ['--config', cfg]
-
-        if platform.system() == "Windows":
-            cmake_args += [f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}']
-            if sys.maxsize > 2 ** 32:
-                cmake_args += ['-A', 'x64']
-            build_args += ['--', '/m']
-        else:
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
-
-        env = os.environ.copy()
-        env['CXXFLAGS'] = f'{env.get("CXXFLAGS", "")} -DVERSION_INFO="{self.distribution.get_version()}"'
-
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
-
+from skbuild import setup
+from setuptools import find_packages
 
 setup(
     name='spectre',
@@ -49,11 +8,7 @@ setup(
     author='xtracko',
     author_email='novotng@gmail.com',
     url='https://github.com/xtracko/spectre',
-    packages=['spectre', 'spectre.sparse', 'spectre.dense'],
-    test_suite='nose.collector',
-    tests_require=['nose'],
-    ext_modules=[],
-    cmdclass={'build_ext': CMakeBuild},
+    packages=find_packages(exclude=["tests"]),
     zip_safe=False,
-    install_requires=['numba', 'numpy', 'scipy']
+    install_requires=['numba', 'numpy', 'scipy', 'pyopenms']
 )
