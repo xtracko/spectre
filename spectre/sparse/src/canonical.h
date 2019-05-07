@@ -24,4 +24,20 @@ namespace spectre {
         sorted &= u < v;
     return sorted;
   }
+
+  template <typename I>
+  auto canonical_alloc_csr(cspan<I> const A_rows, cspan<I> const A_cols,
+                           span<I> const B_rows) noexcept
+  {
+    auto size = static_cast<I>(0);
+    auto iter = B_rows.begin();
+
+    *iter++ = size;
+    for (auto const [a, b] : adjacent(A_rows)) {
+      for (auto const [u, v] : adjacent(A_cols.slice(a, b)))
+        size += u != v;
+      *iter++ = size;
+    }
+    return size;
+  }
 } // namespace spectre
