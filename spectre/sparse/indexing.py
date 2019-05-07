@@ -1,7 +1,7 @@
 from typing import Tuple
 
 import numpy as np
-from numba import jit, njit, prange
+from numba import njit, prange
 
 
 @njit
@@ -26,11 +26,8 @@ def is_csr_indexing(rows: np.ndarray, cols: np.ndarray) -> bool:
     Returns:
         bool: True if the input arrays satisfies the CSR indexing requirements.
     """
-    return rows.ndim == cols.ndim == 1 \
-        and rows.size > 0 \
-        and rows[0] >= 0 \
-        and np.all(rows[:-1] <= rows[1:]) \
-        and rows[-1] <= cols.size
+    return rows.ndim == cols.ndim == 1 and rows.size > 0 and rows[
+        0] >= 0 and np.all(rows[:-1] <= rows[1:]) and rows[-1] <= cols.size
 
 
 @njit

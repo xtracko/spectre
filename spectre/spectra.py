@@ -2,8 +2,8 @@ import numpy as np
 from numba import njit
 from scipy.sparse import csr_matrix
 
-from spectre.sparse import sort_cols
 from spectre.sparse.indexing import merge_cols
+from spectre.sparse.indexing import sort_cols
 
 
 @njit
@@ -11,8 +11,7 @@ def _max_poll(array):
     return np.nanmax(array)
 
 
-def sample_spectra(spectra: np.ndarray, peaks: np.ndarray, values: np.ndarray,
-                   sampling: float) -> csr_matrix:
+def sample_spectra(spectra: np.ndarray, peaks: np.ndarray, values: np.ndarray, sampling: float) -> csr_matrix:
     rows = spectra
 
     cols = np.multiply(peaks, 1 / sampling)
