@@ -1,9 +1,8 @@
 .idea
 .vscode
-*.user
 
 *build*
 docs/_build
 
-Pipfile.lock
 __pycache__
+venv
