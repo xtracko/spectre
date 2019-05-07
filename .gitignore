@@ -7,4 +7,5 @@ docs/_build
 __pycache__
 *.egg-info
 *cpython*.so
-venv
+/venv
+/dist
