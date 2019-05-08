@@ -9,3 +9,7 @@ __pycache__
 *cpython*.so
 /venv
 /dist
+
+# singularity files
+/tools/**/*.sif
+/tools/**/*.simg
