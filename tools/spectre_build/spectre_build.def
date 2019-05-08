@@ -1,0 +1,17 @@
+Bootstrap: docker
+From: gcc:latest
+
+%post
+    apt-get update && apt-get install -y \
+        git tar python3-dev python3-pip
+    wget -qO- 'https://cmake.org/files/v3.14/cmake-3.14.0-Linux-x86_64.tar.gz' | tar --strip-components=1 -xz -C /usr/local
+    pip3 install \
+        numpy numba pytest scikit-build scipy pyopenms
+    rm -rf /var/lib/apt/lists/*
+
+    wget -qO- 'https://github.com/pybind/pybind11/archive/v2.2.4.tar.gz' | tar -xz
+    mkdir buid-pybind11
+    cd buid-pybind11
+    cmake ../pybind11-2.2.4
+    make install -j
+    rm -rf ../pybind11-2.2.4 ../build-pybind11
