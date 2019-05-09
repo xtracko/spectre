@@ -21,15 +21,19 @@ To make native build of Spectre from sources install the requirements (see above
   ```
 Then choose one of the following options to build and/or install:
   ```
-  python -m setup install -- -Dpybind11_DIR=/path/to/pybind11
-  python -m setup bdist_wheel -- -Dpybind11_DIR=/path/to/pybind11
-  python -m setup develop --build-type [Debug|Release] -- -Dpybind11_DIR=/path/to/pybind11
+  python3 -m setup install -- -Dpybind11_DIR=/path/to/pybind11
+  python3 -m setup bdist_wheel -- -Dpybind11_DIR=/path/to/pybind11
+  python3 -m setup develop --build-type [Debug|Release] -- -Dpybind11_DIR=/path/to/pybind11
   ```
 If you are having troble with inconsistent python versions (especially when developing C code in IDE) please pass both folloving variable to cmake:
   ```
   -DPYTHON_EXECUTABLE=/path/to/your/python/executable
   -DPython_ROOT_DIR=/path/to/your/python/root/dir
   ```
+ To make a fully optimized build for your machine run:
+ ```
+ python3 -m setup [cmd] -- -DCMAKE_CXX_FLAGS_RELEASE='-O3 -ffast-math -march=native'
+ ```
   
 ### Containerized build
 You can also build Spectre for Debian 9 (Stretch) and python-3.5 (current python3 for Debian 9) using a [Singularity](https://www.sylabs.io/) container.
@@ -49,5 +53,5 @@ Then on you target machine with singularity installed (no need for root access f
   # if you have conda installed on your system diable it
   conda deactivate
   # build a wheel (no need for aditional arguments as in the native build)
-  python -m setup bdist_wheel
+  python3 -m setup bdist_wheel
   ```
