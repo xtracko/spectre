@@ -10,5 +10,8 @@ setup(
     url='https://github.com/xtracko/spectre',
     packages=find_packages(exclude=["tests"]),
     zip_safe=False,
-    install_requires=['numba', 'numpy', 'scipy', 'pyopenms']
+    setup_requires=['numpy'],
+    install_requires=['numba', 'numpy', 'scipy', 'pyopenms'],
+    tests_require=['pytest', 'pytest-benchmark'],
+    test_suite='tests'
 )
