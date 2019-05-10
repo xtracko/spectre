@@ -2,8 +2,8 @@ import pytest
 
 import spectre
 
-file_list = 'CalNFR1.mzXML'
-precision_list = [1, 0.1, 0.01, 0.01, 0.001]
+file_list = ['CalNFR1.mzXML']
+precision_list = [1, 0.1, 0.01, 0.001]
 
 
 @pytest.mark.parametrize("file", file_list)
