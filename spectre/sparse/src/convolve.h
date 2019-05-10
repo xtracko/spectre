@@ -4,12 +4,12 @@
 #include "span.h"
 
 namespace spectre {
-  template <typename I, typename D>
+  template <typename I, typename J, typename D>
   void convolve_csr_dv(cspan<I> const A_rows, cspan<I> const A_cols,
                        cspan<D> const A_data, cspan<D> const coeffs,
-                       span<I> B_cols, span<D> B_data, I const n_cols) noexcept
+                       span<J> B_cols, span<D> B_data, I const n_cols) noexcept
   {
-    auto const window = static_cast<I>(coeffs.size());
+    auto const window = static_cast<J>(coeffs.size());
     auto const wnd_lhs = window / 2;
     auto const wnd_rhs = (window + 1) / 2;
 

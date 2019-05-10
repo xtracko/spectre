@@ -5,13 +5,13 @@
 #include <vector>
 
 namespace spectre {
-  template <typename I>
-  I rolling_alloc_csr(cspan<I> const A_rows, cspan<I> const A_cols,
-                      span<I> const B_rows, I const A_n_cols,
-                      I const window) noexcept
+  template <typename I, typename J>
+  J rolling_alloc_csr(cspan<I> const A_rows, cspan<I> const A_cols,
+                      span<J> const B_rows, I const A_n_cols,
+                      J const window) noexcept
   {
     auto out = B_rows.begin();
-    auto size = static_cast<I>(0);
+    auto size = static_cast<J>(0);
     auto const wnd_lhs = window / 2;
     auto const wnd_rhs = (window + 1) / 2;
 
@@ -21,23 +21,24 @@ namespace spectre {
       auto end = A_cols.begin() + b;
 
       if (beg != end) {
-        size += std::min(wnd_lhs, beg[0]);
+        size += std::min(wnd_lhs, static_cast<J>(beg[0]));
         for (--end; beg < end; ++beg)
-          size += std::min(window, beg[1] - beg[0]);
-        size += std::min(wnd_rhs, A_n_cols - beg[0]);
+          size += std::min(window, static_cast<J>(beg[1] - beg[0]));
+        size += std::min(wnd_rhs, static_cast<J>(A_n_cols - beg[0]));
       }
       *out++ = size;
     }
     return size;
   }
 
-  template <typename I, typename D, template <typename, typename> typename Krn>
+  template <typename I, typename J, typename D,
+            template <typename, typename> typename Krn>
   void rolling_csr(cspan<I> const A_rows, cspan<I> const A_cols,
-                   cspan<D> const A_data, span<I> const B_cols,
+                   cspan<D> const A_data, span<J> const B_cols,
                    span<D> const B_data, I const A_n_cols,
-                   I const window) noexcept
+                   J const window) noexcept
   {
-    auto kernel = Krn<I, D>{window};
+    auto kernel = Krn<J, D>{window};
     auto const wnd_lhs = window / 2;
     auto const wnd_rhs = (window + 1) / 2;
 

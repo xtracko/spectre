@@ -34,19 +34,21 @@ def rolling(func, x: Union[csr_matrix, csc_matrix], window: int, axis: int):
     x.sum_duplicates()
     minor_size = x.shape[1] if axis else x.shape[0]
 
-    shape = x.shape
-    pointers = np.empty_like(x.indptr)
+    needs_64bit = min(np.prod(x.shape), x.nnz * window) > np.iinfo(np.int32).max
+    index_type = np.int64 if needs_64bit else x.indptr.dtype
+
+    pointers = np.empty(x.indptr.shape, dtype=index_type)
     size = _sparse.rolling_alloc_csr(x.indptr, x.indices, pointers, minor_size,
                                      window)
     data = np.zeros(size, dtype=x.data.dtype)
-    indices = np.zeros(size, dtype=x.indices.dtype)
+    indices = np.zeros(size, dtype=index_type)
 
     func(x.indptr, x.indices, x.data, indices, data, minor_size, window)
 
     if axis:
-        return csr_matrix((data, indices, pointers), shape)
+        return csr_matrix((data, indices, pointers), x.shape)
     else:
-        return csc_matrix((data, indices, pointers), shape)
+        return csc_matrix((data, indices, pointers), x.shape)
 
 
 def rolling_min(x: Union[csr_matrix, csc_matrix], window: int, axis: int):
@@ -88,12 +90,14 @@ def savgol_filter(x: Union[csr_matrix, csc_matrix], window: int, degree: int,
 
     minor_size = x.shape[1] if axis else x.shape[0]
 
-    shape = x.shape
-    pointers = np.empty_like(x.indptr)
+    needs_64bit = min(np.prod(x.shape), x.nnz * window) > np.iinfo(np.int32).max
+    index_type = np.int64 if needs_64bit else x.indptr.dtype
+
+    pointers = np.empty(x.indptr.shape, dtype=index_type)
     size = _sparse.rolling_alloc_csr(x.indptr, x.indices, pointers, minor_size,
                                      window)
     data = np.zeros(size, dtype=x.data.dtype)
-    indices = np.zeros(size, dtype=x.indices.dtype)
+    indices = np.zeros(size, dtype=index_type)
 
     from scipy.signal import savgol_coeffs
     coeffs = savgol_coeffs(window, degree)
@@ -101,9 +105,9 @@ def savgol_filter(x: Union[csr_matrix, csc_matrix], window: int, degree: int,
                             minor_size)
 
     if axis:
-        return csr_matrix((data, indices, pointers), shape)
+        return csr_matrix((data, indices, pointers), x.shape)
     else:
-        return csc_matrix((data, indices, pointers), shape)
+        return csc_matrix((data, indices, pointers), x.shape)
 
 
 def remove_noise(data: Union[csr_matrix, csc_matrix], peak_width: float):
