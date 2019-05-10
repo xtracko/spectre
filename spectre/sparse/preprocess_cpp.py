@@ -113,7 +113,7 @@ def savgol_filter(x: Union[csr_matrix, csc_matrix], window: int, degree: int,
 def remove_noise(data: Union[csr_matrix, csc_matrix], peak_width: float):
     peak_width = int(round(peak_width))
     window = peak_width if (peak_width % 2) else (peak_width + 1)
-    degree = 3 if window > 3 else (window - 1)
+    degree = min(3, window - 1)
 
     if degree > 0:
         data = savgol_filter(data, window, degree, axis=0)
@@ -127,12 +127,12 @@ def remove_noise(data: Union[csr_matrix, csc_matrix], peak_width: float):
 
 
 def remove_baseline(data: Union[csr_matrix, csc_matrix], k: int):
-    k = k if k <= (data.shape[0] - 2) else (data.shape[0] - 2)
-    k = k if (k % 2) else (k - 1)
+    k_med = min(k, data.shape[0] - 1)
+    k_med = k_med if (k_med % 2) else (k_med - 1)
 
     data_min = rolling_min(data, window=k, axis=0)
 
-    data_base = rolling_median(data, window=k, axis=0)
+    data_base = rolling_median(data, window=k_med, axis=0)
     max_clip_spmat_plus_dvec(data_base, data_min, std(data_min, axis=0))
     data_base = rolling_mean(data_base, window=k, axis=0)
 
