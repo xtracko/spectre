@@ -65,6 +65,22 @@ def rolling_median(x: Union[csr_matrix, csc_matrix], window: int, axis: int):
     return rolling(_sparse.rolling_median_csr, x, window, axis)
 
 
+def max_clip_spmat_plus_dvec(a_mat: Union[csr_matrix, csc_matrix],
+                             b_mat: Union[csr_matrix, csc_matrix],
+                             c_vec: np.ndarray):
+    assert (a_mat.shape == b_mat.shape and c_vec.ndim == 1)
+    assert ((isspmatrix_csr(a_mat) and isspmatrix_csr(b_mat)) or (
+            isspmatrix_csc(a_mat) and isspmatrix_csc(b_mat)))
+    assert ((isspmatrix_csr(a_mat) and a_mat.shape[0] == c_vec.shape[0]) or (
+            isspmatrix_csc(a_mat) and a_mat.shape[1] == c_vec.shape[0]))
+
+    # compute a[a > b + c] = (b + c)[a > b + c]
+    _sparse.maxclip_csr_spmat_plus_dvec_nonnegative(a_mat.indptr, a_mat.indices,
+                                                    a_mat.data, b_mat.indptr,
+                                                    b_mat.indices, b_mat.data,
+                                                    c_vec)
+
+
 def savgol_filter(x: Union[csr_matrix, csc_matrix], window: int, degree: int,
                   axis: int):
     x = x.tocsr() if axis else x.tocsc()
@@ -111,10 +127,9 @@ def remove_baseline(data: Union[csr_matrix, csc_matrix], k: int):
     k = k if (k % 2) else (k - 1)
 
     data_min = rolling_min(data, window=k, axis=0)
-    data_min = data_min + std(data_min, axis=0)
 
     data_base = rolling_median(data, window=k, axis=0)
-    data_base[data_base > data_min] = data_min[data_base > data_min]
+    max_clip_spmat_plus_dvec(data_base, data_min, std(data_min, axis=0))
     data_base = rolling_mean(data_base, window=k, axis=0)
 
     data = data - data_base

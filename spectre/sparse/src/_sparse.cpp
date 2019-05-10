@@ -1,5 +1,6 @@
 #include "canonical.h"
 #include "convolve.h"
+#include "maxclip.h"
 #include "python.h"
 #include "rolling.h"
 #include "stdev.h"
@@ -69,4 +70,13 @@ PYBIND11_MODULE(_sparse, m)
   m.def("convolve_csr_dv", convolve_csr_dv<i32, f64>);
   m.def("convolve_csr_dv", convolve_csr_dv<i64, f32>);
   m.def("convolve_csr_dv", convolve_csr_dv<i64, f64>);
+
+  m.def("maxclip_csr_spmat_plus_dvec_nonnegative",
+        maxclip_csr_spmat_plus_dvec_nonnegative<i32, f32>);
+  m.def("maxclip_csr_spmat_plus_dvec_nonnegative",
+        maxclip_csr_spmat_plus_dvec_nonnegative<i32, f64>);
+  m.def("maxclip_csr_spmat_plus_dvec_nonnegative",
+        maxclip_csr_spmat_plus_dvec_nonnegative<i64, f32>);
+  m.def("maxclip_csr_spmat_plus_dvec_nonnegative",
+        maxclip_csr_spmat_plus_dvec_nonnegative<i64, f64>);
 }
