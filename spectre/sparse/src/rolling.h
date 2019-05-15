@@ -39,8 +39,7 @@ namespace spectre {
                    J const window) noexcept
   {
     auto kernel = Krn<J, D>{window};
-    auto const wnd_lhs = window / 2;
-    auto const wnd_rhs = (window + 1) / 2;
+    auto const wnd_lhs = (window - 1) / 2;
 
     auto out_col = B_cols.begin();
     auto out_val = B_data.begin();
@@ -49,7 +48,8 @@ namespace spectre {
       auto const cols = A_cols.slice(a, b);
       auto const data = A_data.slice(a, b);
 
-      auto start = -wnd_lhs, stop = A_n_cols - wnd_rhs;
+      auto start = -wnd_lhs;
+      auto stop = A_n_cols - wnd_lhs;
       auto col_iter = cols.begin();
       auto val_iter = data.begin();
 
@@ -72,6 +72,8 @@ namespace spectre {
 
         assert(out_col < B_cols.end());
         assert(out_val < B_data.end());
+        assert(0 <= start + wnd_lhs);
+        assert(start + wnd_lhs < A_n_cols);
 
         *out_col++ = start + wnd_lhs;
         *out_val++ = kernel.pop();

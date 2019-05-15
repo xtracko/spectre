@@ -7,11 +7,10 @@ namespace spectre {
   template <typename I, typename J, typename D>
   void convolve_csr_dv(cspan<I> const A_rows, cspan<I> const A_cols,
                        cspan<D> const A_data, cspan<D> const coeffs,
-                       span<J> B_cols, span<D> B_data, I const n_cols) noexcept
+                       span<J> B_cols, span<D> B_data, I const A_n_cols) noexcept
   {
     auto const window = static_cast<J>(coeffs.size());
-    auto const wnd_lhs = window / 2;
-    auto const wnd_rhs = (window + 1) / 2;
+    auto const wnd_lhs = (window - 1) / 2;
 
     auto out_col = B_cols.begin();
     auto out_val = B_data.begin();
@@ -21,7 +20,7 @@ namespace spectre {
       auto const data = A_data.slice(a, b);
 
       auto start = -wnd_lhs;
-      auto stop = n_cols - wnd_rhs;
+      auto stop = A_n_cols - wnd_lhs;
       auto col_iter = cols.begin();
       auto val_iter = data.begin();
 
@@ -44,6 +43,8 @@ namespace spectre {
 
         assert(out_col < B_cols.end());
         assert(out_val < B_data.end());
+        assert(0 <= start + wnd_lhs);
+        assert(start + wnd_lhs < A_n_cols);
 
         *out_col++ = start + wnd_lhs;
         *out_val++ = value;
